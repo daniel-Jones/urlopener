@@ -23,6 +23,7 @@
 #include <signal.h>
 
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
+#define BUFFSIZE 256 /* size of malloc buffers (max program/extension list length) */
 
 char *programs[][2] =
 {
@@ -67,10 +68,10 @@ getext(char *url)
 	{
 		for (int i = 0; i < LEN(programs); i++)
 		{
-			char *buff = malloc(256);
+			char *buff = malloc(BUFFSIZE);
 			if (buff == NULL)
 				return 0;
-			strncpy(buff, programs[i][0], 255);
+			strncpy(buff, programs[i][0], BUFFSIZE-1);
 			char *t = strtok(buff, ",");
 			while (t != NULL)
 			{
@@ -114,7 +115,7 @@ main(int argc, char *argv[])
 				fclose(stdout);
 				fclose(stderr);
 				char *args[20];
-				char *buff = malloc(256);
+				char *buff = malloc(BUFFSIZE);
 				if (buff == NULL)
 				{
 					perror("malloc");
@@ -125,9 +126,8 @@ main(int argc, char *argv[])
 				 * so we tokenise the string and add each part to an array
 				 * that we will use in execvp
 				 */
-				strncpy(buff, programs[ext][1], 255);
+				strncpy(buff, programs[ext][1], BUFFSIZE-1);
 				char *t = strtok(buff, " ");
-				args[0] = t;
 				int z = 0;
 				while (t != NULL)
 				{
