@@ -1,7 +1,7 @@
 TARGET = urlopen
 LIBS =
 CC = gcc
-CFLAGS = -g -Wall -Wextra
+CFLAGS = -g -Wall -Wextra -std=c99
 
 .PHONY: default all clean
 
