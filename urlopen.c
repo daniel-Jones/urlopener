@@ -30,7 +30,7 @@ char *programs[][2] =
 	{"default", /* this is the default program */	"/usr/bin/qutebrowser"},
 	{"jpg,jpeg,png",				"/usr/bin/feh"},
 	{"gif,gifv,webm,mp4,mp3,wav,flac", 		"/usr/bin/mpv --loop --force-window=yes"},
-	{"pdf",						"mupdf"}
+	{"pdf",						"/usr/bin/mupdf"}
 };
 
 int
