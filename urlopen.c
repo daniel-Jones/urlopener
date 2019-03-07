@@ -38,7 +38,7 @@ char *programs[][2] =
 
 char *forceddomains[][2] =
 {
-	/* if the odmain is listed here, the index into programs[][]
+	/* if the domain is listed here, the index into programs[x][]
 	 * will be the number, don't add the protocol identifier
 	*/
 	{"youtube.com",		"2"},
@@ -58,8 +58,9 @@ islink(char *url)
 	{
 		int s = (p-url);
 		/*
-		 * check if the number of characters before the '://' is >0 && <5 && contains a '.'
-		 * 10 is a guess, i have no idea what the limit of a protocol identifier is
+		 * check if the number of characters before the '://' is >0 && <10 && contains a '.'
+		 * 10 is a reasonable number plucked out of thin air, RFC 3986 does not state a maximum
+		 * we would like to avoid false positives, not that it matters much
 		 */
 		if (s > 0 && s <= 10 && strchr(url, '.') != NULL)
 			// it's probably a link
@@ -111,13 +112,16 @@ checkforceddomains(char *url, int ext)
 	 * checking process:
 	 * domain is already probably a url
 	 * check if first x characters after protocol identifier is in the list?
-	 * return the number in specified
+	 * return the number specified in the array
 	*/
 	int ret = ext;
 	char *buff = malloc(BUFFSIZE);
 	char *buff2 = malloc(BUFFSIZE);
 	if (buff == NULL || buff2 == NULL)
+	{
+		perror("malloc");
 		goto exitdomaincheck; /* exit right away */
+	}
 	strncpy(buff, url, BUFFSIZE-1);
 	char *p = NULL;
 	p = strstr(buff, "://");
