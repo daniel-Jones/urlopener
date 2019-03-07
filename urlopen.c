@@ -76,7 +76,7 @@ getext(char *url)
 	 * check if the extension of the url (if exists) is in our array
 	 * if it is, return the index on the array, otherwise 0
 	 */
-	 int ret = 0;
+	int ret = 0;
 	char *p = NULL;
 	if ((p = strrchr(url, '.')+1))
 	{
