@@ -84,7 +84,10 @@ getext(char *url)
 		{
 			char *buff = malloc(BUFFSIZE);
 			if (buff == NULL)
+			{
+				perror("malloc");
 				return 0;
+			}
 			strncpy(buff, programs[i][0], BUFFSIZE-1);
 			char *t = strtok(buff, ",");
 			while (t != NULL)
