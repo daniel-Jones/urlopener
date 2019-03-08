@@ -38,7 +38,8 @@ char *programs[][2] =
 };
 
 char *forceddomains[][2] =
-{ /* if the domain is listed here, the index into programs[x][]
+{ 
+	/* if the domain is listed here, the index into programs[x][]
 	 * will be the number, don't add the protocol identifier
 	 * the www subdomain is considered a different domain
 	*/
@@ -195,9 +196,13 @@ main(int argc, char *argv[])
 				{
 					// child process, we don't want to ignore signals
 					signal(SIGCHLD, SIG_DFL);
-					// close std{out,err}
-					fclose(stdout);
-					fclose(stderr);
+					/*
+					 * we don't want std{out,err} to be associated with the terminal,
+					 * but we also don't want to close it to avoid the file descriptors
+					 * being re-used potentially leading to problems, so reopen then to /dev/null
+					 */
+					freopen("/dev/null", "w", stdout);
+					freopen("/dev/null", "w", stderr);
 					char *args[20];
 					char *buff = malloc(BUFFSIZE);
 					if (buff == NULL)
@@ -226,7 +231,7 @@ main(int argc, char *argv[])
 				}
 				else if (pid == -1)
 				{
-					perror("fork error");
+					perror("fork");
 				}
 			}
 		}
