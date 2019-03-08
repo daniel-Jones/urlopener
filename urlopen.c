@@ -23,7 +23,7 @@
 #include <signal.h>
 #include <sys/types.h>
 
-#define NOFORK 1 /* if set we wont fork and execute programs */
+#define NOFORK 0 /* if set we wont fork and execute programs */
 
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 #define BUFFSIZE 256 /* size of malloc buffers (max program/extension list length) */
@@ -33,17 +33,21 @@ char *programs[][2] =
 	{"default", /* this is the default program */	"/usr/bin/qutebrowser"},
 	{"jpg,jpeg,png",				"/usr/bin/feh"},
 	{"gif,gifv,webm,mp4,mp3,wav,flac", 		"/usr/bin/mpv --loop --force-window=yes"},
-	{"pdf",						"/usr/bin/mupdf"}
+	{"pdf",						"/usr/bin/mupdf"},
+	{"slackspecial",				"/home/daniel_j/compiled/waterfox/waterfox"}
 };
 
 char *forceddomains[][2] =
-{
-	/* if the domain is listed here, the index into programs[x][]
+{ /* if the domain is listed here, the index into programs[x][]
 	 * will be the number, don't add the protocol identifier
+	 * the www subdomain is considered a different domain
 	*/
 	{"youtube.com",		"2"},
+	{"www.youtube.com",	"2"},
 	{"youtu.be", 		"2"},
-	{"streamable.com",	"2"}
+	{"streamable.com",	"2"},
+	{"www.streamable.com",	"2"},
+	{"files.slack.com",	"4"}
 };
 
 int
@@ -183,13 +187,14 @@ main(int argc, char *argv[])
 			ext = getext(argv[i]);
 			// check if the domain should be forced to a program
 			ext = checkforceddomains(argv[i], ext);
-			printf("program to run is: \"%s %s\"\n", programs[ext][1], argv[i]);
+			//printf("program to run is: \"%s %s\"\n", programs[ext][1], argv[i]);
 			if (NOFORK == 0)
 			{
 				pid_t pid = fork();
 				if (pid == 0)
 				{
-					// child process
+					// child process, we don't want to ignore signals
+					signal(SIGCHLD, SIG_DFL);
 					// close std{out,err}
 					fclose(stdout);
 					fclose(stderr);
