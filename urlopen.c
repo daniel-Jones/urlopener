@@ -26,7 +26,8 @@
 #define NOFORK 0 /* if set we wont fork and execute programs */
 
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
-#define BUFFSIZE 256 /* size of malloc buffers (max program/extension list length) */
+#define BUFF_SIZE 256 	/* size of malloc buffers (max program/extension list length) */
+#define ARG_LIMIT 20 	/* maximum number of arguments in the programs to open */
 
 char *programs[][2] =
 {
@@ -87,13 +88,13 @@ getext(char *url)
 	{
 		for (int i = 0; i < LEN(programs); i++)
 		{
-			char *buff = malloc(BUFFSIZE);
+			char *buff = malloc(BUFF_SIZE);
 			if (buff == NULL)
 			{
 				perror("malloc");
 				return 0;
 			}
-			strncpy(buff, programs[i][0], BUFFSIZE-1);
+			strncpy(buff, programs[i][0], BUFF_SIZE-1);
 			char *t = strtok(buff, ",");
 			while (t != NULL)
 			{
@@ -123,14 +124,14 @@ checkforceddomains(char *url, int ext)
 	 * return the number specified in the array
 	*/
 	int ret = ext;
-	char *buff = malloc(BUFFSIZE);
-	char *buff2 = malloc(BUFFSIZE);
+	char *buff = malloc(BUFF_SIZE);
+	char *buff2 = malloc(BUFF_SIZE);
 	if (buff == NULL || buff2 == NULL)
 	{
 		perror("malloc");
 		goto exitdomaincheck; /* exit right away */
 	}
-	strncpy(buff, url, BUFFSIZE-1);
+	strncpy(buff, url, BUFF_SIZE-1);
 	char *p = NULL;
 	p = strstr(buff, "://");
 	if (p == NULL)
@@ -141,7 +142,7 @@ checkforceddomains(char *url, int ext)
 	 * there exists '://'
 	 * so we can tokenise a new buffer at '/' and _assume_ that is the domain
 	 */
-	strncpy(buff2, p, BUFFSIZE-1);
+	strncpy(buff2, p, BUFF_SIZE-1);
 	// wow this is bad
 	char *tmp = strchr(buff2, '/');
 	if (tmp == NULL) /* nothing specificed after the domain, just exit */
@@ -153,7 +154,7 @@ checkforceddomains(char *url, int ext)
 	 */
 	for (int i = 0; i < LEN(forceddomains); i++)
 	{
-		strncpy(buff, forceddomains[i][0], BUFFSIZE-1);
+		strncpy(buff, forceddomains[i][0], BUFF_SIZE-1);
 		if (strcmp(buff, buff2) == 0)
 		{
 			//printf("domain should be forced as %s\n", buff);
@@ -199,12 +200,12 @@ main(int argc, char *argv[])
 					/*
 					 * we don't want std{out,err} to be associated with the terminal,
 					 * but we also don't want to close it to avoid the file descriptors
-					 * being re-used potentially leading to problems, so reopen then to /dev/null
+					 * being re-used potentially leading to problems, so reopen them to /dev/null
 					 */
 					freopen("/dev/null", "w", stdout);
 					freopen("/dev/null", "w", stderr);
-					char *args[20];
-					char *buff = malloc(BUFFSIZE);
+					char *args[ARG_LIMIT];
+					char *buff = malloc(BUFF_SIZE);
 					if (buff == NULL)
 					{
 						perror("malloc");
@@ -215,7 +216,7 @@ main(int argc, char *argv[])
 					 * so we tokenise the string and add each part to an array
 					 * that we will use in execvp
 					 */
-					strncpy(buff, programs[ext][1], BUFFSIZE-1);
+					strncpy(buff, programs[ext][1], BUFF_SIZE-1);
 					char *t = strtok(buff, " ");
 					int z = 0;
 					while (t != NULL)
