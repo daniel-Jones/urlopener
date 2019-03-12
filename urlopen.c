@@ -31,6 +31,10 @@
 
 char *programs[][2] =
 {
+	/*
+	 * the file extensions and program to associate with them
+	 * separate extensions using ','
+	 */
 	{"default", /* this is the default program */	"/usr/bin/qutebrowser"},
 	{"jpg,jpeg,png",				"/usr/bin/feh"},
 	{"gif,gifv,webm,mp4,mp3,wav,flac", 		"/usr/bin/mpv --loop --force-window=yes"},
@@ -80,7 +84,7 @@ getext(char *url)
 {
 	/* 
 	 * check if the extension of the url (if exists) is in our array
-	 * if it is, return the index on the array, otherwise 0
+	 * if it is, return the index in the array, otherwise 0
 	 */
 	int ret = 0;
 	char *p = NULL;
