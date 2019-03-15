@@ -53,7 +53,12 @@ char *forceddomains[][2] =
 	{"youtu.be", 		"2"},
 	{"streamable.com",	"2"},
 	{"www.streamable.com",	"2"},
-	{"files.slack.com",	"4"}
+	{"files.slack.com",	"4"},
+	{"reddit.com",		"4"},
+	{"www.reddit.com",	"4"},
+	{"mod.reddit.com",	"4"},
+	{"redd.it",		"4"}
+
 };
 
 int
@@ -161,7 +166,8 @@ checkforceddomains(char *url, int ext)
 		strncpy(buff, forceddomains[i][0], BUFF_SIZE-1);
 		if (strcmp(buff, buff2) == 0)
 		{
-			//printf("domain should be forced as %s\n", buff);
+			if (NOFORK)
+				printf("domain should be forced as %s\n", buff);
 			ret = atoi(forceddomains[i][1]);
 			goto exitdomaincheck;
 		}
@@ -187,13 +193,15 @@ main(int argc, char *argv[])
 		 * fork, execute
 		 */
 		link = islink(argv[i]);
-		//printf("%s is probably %s link\n", argv[i], (link == 1) ? "a" : "not a");
+		if (NOFORK)
+			printf("%s is probably %s link\n", argv[i], (link == 1) ? "a" : "not a");
 		if (link == 1)
 		{
 			ext = getext(argv[i]);
 			// check if the domain should be forced to a program
 			ext = checkforceddomains(argv[i], ext);
-			//printf("program to run is: \"%s %s\"\n", programs[ext][1], argv[i]);
+			if (NOFORK)
+				printf("program to run is: \"%s %s\"\n", programs[ext][1], argv[i]);
 			if (NOFORK == 0)
 			{
 				pid_t pid = fork();
