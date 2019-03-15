@@ -233,7 +233,7 @@ forkexecute(char *url)
 			return -1;
 		}
 	}
-	return 1; // never reached
+	return 1;
 }
 
 int
