@@ -179,10 +179,68 @@ exitdomaincheck:
 }
 
 int
+forkexecute(char *url)
+{
+	int ext = 0;
+	ext = getext(url);
+	// check if the domain should be forced to a program
+	ext = checkforceddomains(url, ext);
+	if (NOFORK)
+		printf("program to run is: \"%s %s\"\n", programs[ext][1], url);
+	if (NOFORK == 0)
+	{
+		pid_t pid = fork();
+		if (pid == 0)
+		{
+			// child process, we don't want to ignore signals
+			signal(SIGCHLD, SIG_DFL);
+			/*
+			 * we don't want std{out,err} to be associated with the terminal,
+			 * but we also don't want to close it to avoid the file descriptors
+			 * being re-used potentially leading to problems, so reopen them to /dev/null
+			 */
+			freopen("/dev/null", "w", stdout);
+			freopen("/dev/null", "w", stderr);
+			char *args[ARG_LIMIT];
+			char *buff = malloc(BUFF_SIZE);
+			if (buff == NULL)
+			{
+				perror("malloc");
+				return -1;
+			}
+			/*
+			 * the program we're calling might have arguments,
+			 * so we tokenise the string and add each part to an array
+			 * that we will use in execvp
+			 */
+			strncpy(buff, programs[ext][1], BUFF_SIZE-1);
+			char *t = strtok(buff, " ");
+			int z = 0;
+			while (t != NULL)
+			{
+				args[z] = t;
+				t = strtok(NULL, " ");
+				z++;
+			}
+			args[z] = url;
+			args[z+1] = (char *)0;
+			execvp(args[0], args);
+			_exit(1);
+		}
+		else if (pid == -1)
+		{
+			perror("fork");
+			return -1;
+		}
+	}
+	return 1; // never reached
+}
+
+int
 main(int argc, char *argv[])
 {
 	int link = 0;
-	int ext = 0;
+	int ret = 1;
 	// we don't care about children
 	signal(SIGCHLD, SIG_IGN);
 	for (int i = 1; i < argc; i++)
@@ -197,56 +255,9 @@ main(int argc, char *argv[])
 			printf("%s is probably %s link\n", argv[i], (link == 1) ? "a" : "not a");
 		if (link == 1)
 		{
-			ext = getext(argv[i]);
-			// check if the domain should be forced to a program
-			ext = checkforceddomains(argv[i], ext);
-			if (NOFORK)
-				printf("program to run is: \"%s %s\"\n", programs[ext][1], argv[i]);
-			if (NOFORK == 0)
-			{
-				pid_t pid = fork();
-				if (pid == 0)
-				{
-					// child process, we don't want to ignore signals
-					signal(SIGCHLD, SIG_DFL);
-					/*
-					 * we don't want std{out,err} to be associated with the terminal,
-					 * but we also don't want to close it to avoid the file descriptors
-					 * being re-used potentially leading to problems, so reopen them to /dev/null
-					 */
-					freopen("/dev/null", "w", stdout);
-					freopen("/dev/null", "w", stderr);
-					char *args[ARG_LIMIT];
-					char *buff = malloc(BUFF_SIZE);
-					if (buff == NULL)
-					{
-						perror("malloc");
-						return -1;
-					}
-					/*
-					 * the program we're calling might have arguments,
-					 * so we tokenise the string and add each part to an array
-					 * that we will use in execvp
-					 */
-					strncpy(buff, programs[ext][1], BUFF_SIZE-1);
-					char *t = strtok(buff, " ");
-					int z = 0;
-					while (t != NULL)
-					{
-						args[z] = t;
-						t = strtok(NULL, " ");
-						z++;
-					}
-					args[z] = argv[i];
-					args[z+1] = (char *)0;
-					execvp(args[0], args);
-					_exit(1);
-				}
-				else if (pid == -1)
-				{
-					perror("fork");
-				}
-			}
+			ret = forkexecute(argv[i]);
+			if (ret != 1)
+				fprintf(stderr, "fork/execute failed for: %s", argv[i]);
 		}
 	}
 	return 0;
