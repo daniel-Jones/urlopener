@@ -1,1 +1,5 @@
-Simple urlopener to replace my old python version.
+Simple urlopener to replace my old Python version.
+
+Allows you to specificy specific programs for certain domains and file extensions, for example I open video links (mp4, web, streamable ...) in mpv, while I open images (jpg, png ...) in feh.
+
+If there is nothing after domain.tld there will be no check for forced domains. Questionable decision maybe, if you need that, it is easy to change.
