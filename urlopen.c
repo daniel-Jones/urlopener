@@ -27,7 +27,15 @@
 
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 #define BUFF_SIZE 256 	/* size of malloc buffers (max program/extension list length) */
-#define ARG_LIMIT 20 	/* maximum number of arguments in the programs to open */
+/*
+ * maximum number of arguments for the program
+ * the program will only attach ARG_LIMIT-2 arguments to your executed process, the rest are ignored
+ * this is because one argument is saved for the url and one is saved for a NULL chraracter
+ *
+ * the program to execute itself is one argument
+ */
+
+#define ARG_LIMIT 20
 
 char *programs[][2] =
 {
@@ -216,7 +224,7 @@ forkexecute(char *url)
 			strncpy(buff, programs[ext][1], BUFF_SIZE-1);
 			char *t = strtok(buff, " ");
 			int z = 0;
-			while (t != NULL)
+			while (t != NULL && z < ARG_LIMIT-2) // save a position for the url and NULL
 			{
 				args[z] = t;
 				t = strtok(NULL, " ");
