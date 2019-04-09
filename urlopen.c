@@ -22,6 +22,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <ctype.h>
 
 #define NOFORK 0 /* if set we wont fork and execute programs */
 
@@ -92,6 +93,15 @@ islink(char *url)
 	return 0;
 }
 
+void
+upper(char *str)
+{
+	for (size_t i = 0; i < strlen(str); i++)
+	{
+		str[i] = toupper(str[i]);
+	}
+}
+
 int
 getext(char *url)
 {
@@ -101,7 +111,16 @@ getext(char *url)
 	 */
 	int ret = 0;
 	char *p = NULL;
-	if ((p = strrchr(url, '.')+1))
+	/* we don't want to modify the original url */
+	char *curl = malloc(strlen(url)+1);
+	if (curl == NULL)
+	{
+		perror("malloc");
+		free(curl);
+		return 0;
+	}
+	strcpy(curl, url);
+	if ((p = strrchr(curl, '.')+1))
 	{
 		for (int i = 0; i < LEN(programs); i++)
 		{
@@ -109,12 +128,16 @@ getext(char *url)
 			if (buff == NULL)
 			{
 				perror("malloc");
+				free(curl);
 				return 0;
 			}
 			strncpy(buff, programs[i][0], BUFF_SIZE-1);
 			char *t = strtok(buff, ",");
+			upper(p);
 			while (t != NULL)
 			{
+				upper(t);
+				printf("checking %s vs %s\n", t, p);
 				if (strcmp(t, p) == 0)
 				{
 					ret = i;
@@ -124,6 +147,7 @@ getext(char *url)
 			free(buff);
 		}
 	}
+	free(curl);
 	return ret;
 }
 
