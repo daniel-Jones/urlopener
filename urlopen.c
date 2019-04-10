@@ -137,7 +137,6 @@ getext(char *url)
 			while (t != NULL)
 			{
 				upper(t);
-				printf("checking %s vs %s\n", t, p);
 				if (strcmp(t, p) == 0)
 				{
 					ret = i;
