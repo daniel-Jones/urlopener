@@ -58,6 +58,7 @@ char *forceddomains[][2] =
 	 * the www subdomain is considered a different domain
 	*/
 	{"youtube.com",		"2"},
+	{"m.youtube.com",	"2"},
 	{"www.youtube.com",	"2"},
 	{"youtu.be", 		"2"},
 	{"streamable.com",	"2"},
