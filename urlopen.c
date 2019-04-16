@@ -61,6 +61,7 @@ char *forceddomains[][2] =
 	{"m.youtube.com",	"2"},
 	{"www.youtube.com",	"2"},
 	{"youtu.be", 		"2"},
+	{"v.redd.it", 		"2"},
 	{"streamable.com",	"2"},
 	{"www.streamable.com",	"2"},
 	{"files.slack.com",	"4"},
