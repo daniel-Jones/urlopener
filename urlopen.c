@@ -68,7 +68,7 @@ char *forceddomains[][2] =
 	{"reddit.com",			"4"},
 	{"www.reddit.com",		"4"},
 	{"mod.reddit.com",		"4"},
-	{"redd.it",			"4"}
+	{"redd.it",			"4"},
 	{"globaloffensivebot.com",	"4"}
 
 };
