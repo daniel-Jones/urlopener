@@ -57,18 +57,19 @@ char *forceddomains[][2] =
 	 * will be the number, don't add the protocol identifier
 	 * the www subdomain is considered a different domain
 	*/
-	{"youtube.com",		"2"},
-	{"m.youtube.com",	"2"},
-	{"www.youtube.com",	"2"},
-	{"youtu.be", 		"2"},
-	{"v.redd.it", 		"2"},
-	{"streamable.com",	"2"},
-	{"www.streamable.com",	"2"},
-	{"files.slack.com",	"4"},
-	{"reddit.com",		"4"},
-	{"www.reddit.com",	"4"},
-	{"mod.reddit.com",	"4"},
-	{"redd.it",		"4"}
+	{"youtube.com",			"2"},
+	{"m.youtube.com",		"2"},
+	{"www.youtube.com",		"2"},
+	{"youtu.be", 			"2"},
+	{"v.redd.it", 			"2"},
+	{"streamable.com",		"2"},
+	{"www.streamable.com",		"2"},
+	{"files.slack.com",		"4"},
+	{"reddit.com",			"4"},
+	{"www.reddit.com",		"4"},
+	{"mod.reddit.com",		"4"},
+	{"redd.it",			"4"}
+	{"globaloffensivebot.com",	"4"}
 
 };
 
