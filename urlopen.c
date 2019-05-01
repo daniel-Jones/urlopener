@@ -67,6 +67,8 @@ char *forceddomains[][2] =
 	{"files.slack.com",		"4"},
 	{"reddit.com",			"4"},
 	{"www.reddit.com",		"4"},
+	{"new.reddit.com",		"4"},
+	{"old.reddit.com",		"4"},
 	{"mod.reddit.com",		"4"},
 	{"redd.it",			"4"},
 	{"globaloffensivebot.com",	"4"}
