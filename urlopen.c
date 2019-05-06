@@ -71,6 +71,7 @@ char *forceddomains[][2] =
 	{"old.reddit.com",		"4"},
 	{"mod.reddit.com",		"4"},
 	{"redd.it",			"4"},
+	{"twitter.com",			"4"},
 	{"globaloffensivebot.com",	"4"}
 
 };
