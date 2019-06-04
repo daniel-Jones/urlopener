@@ -45,7 +45,7 @@ char *programs[][2] =
 	 * separate extensions using ','
 	 */
 	{"default", /* this is the default program */	"/usr/bin/qutebrowser"},
-	{"jpg,jpeg,png,jpg:large",				"/usr/bin/feh"},
+	{"jpg,jpeg,png,jpg:large",			"/usr/bin/feh"},
 	{"gif,gifv,webm,mp4,mp3,wav,flac", 		"/usr/bin/mpv --loop --force-window=yes"},
 	{"pdf",						"/usr/bin/mupdf"},
 	{"slackspecial",				"/home/daniel_j/compiled/waterfox/waterfox"}
@@ -94,7 +94,7 @@ islink(char *url)
 		 * we would like to avoid false positives, not that it matters much
 		 */
 		if (s > 0 && s <= 10 && strchr(url, '.') != NULL)
-			// it's probably a link
+			/* it's probably a link */
 			return 1;
 	}
 	return 0;
@@ -103,7 +103,8 @@ islink(char *url)
 void
 upper(char *str)
 {
-	for (size_t i = 0; i < strlen(str); i++)
+	size_t i;
+	for (i = 0; i < strlen(str); i++)
 	{
 		str[i] = toupper(str[i]);
 	}
@@ -116,8 +117,10 @@ getext(char *url)
 	 * check if the extension of the url (if exists) is in our array
 	 * if it is, return the index in the array, otherwise 0
 	 */
+	int i;
 	int ret = 0;
 	char *p = NULL;
+	char *t, *buff;
 	/* we don't want to modify the original url */
 	char *curl = malloc(strlen(url)+1);
 	if (curl == NULL)
@@ -129,9 +132,9 @@ getext(char *url)
 	strcpy(curl, url);
 	if ((p = strrchr(curl, '.')+1))
 	{
-		for (int i = 0; i < LEN(programs); i++)
+		for (i = 0; i < LEN(programs); i++)
 		{
-			char *buff = malloc(BUFF_SIZE);
+			buff = malloc(BUFF_SIZE);
 			if (buff == NULL)
 			{
 				perror("malloc");
@@ -139,7 +142,7 @@ getext(char *url)
 				return 0;
 			}
 			strncpy(buff, programs[i][0], BUFF_SIZE-1);
-			char *t = strtok(buff, ",");
+			t = strtok(buff, ",");
 			upper(p);
 			while (t != NULL)
 			{
@@ -170,7 +173,10 @@ checkforceddomains(char *url, int ext)
 	 * check if first x characters after protocol identifier is in the list?
 	 * return the number specified in the array
 	*/
+	int i;
 	int ret = ext;
+	char *p;
+	char *tmp;
 	char *buff = malloc(BUFF_SIZE);
 	char *buff2 = malloc(BUFF_SIZE);
 	if (buff == NULL || buff2 == NULL)
@@ -179,7 +185,7 @@ checkforceddomains(char *url, int ext)
 		goto exitdomaincheck; /* exit right away */
 	}
 	strncpy(buff, url, BUFF_SIZE-1);
-	char *p = NULL;
+	p = NULL;
 	p = strstr(buff, "://");
 	if (p == NULL)
 		goto exitdomaincheck; /* exit right away */
@@ -190,8 +196,8 @@ checkforceddomains(char *url, int ext)
 	 * so we can tokenise a new buffer at '/' and _assume_ that is the domain
 	 */
 	strncpy(buff2, p, BUFF_SIZE-1);
-	// wow this is bad
-	char *tmp = strchr(buff2, '/');
+	/* wow this is bad */
+	tmp = strchr(buff2, '/');
 	if (tmp == NULL) /* nothing specificed after the domain, just exit */
 		goto exitdomaincheck;
 	*(tmp) = '\0';
@@ -199,7 +205,7 @@ checkforceddomains(char *url, int ext)
 	 * now we need to loop through the array and check if there is a number to force
 	 * we can reuse our first buffer and char pointer here
 	 */
-	for (int i = 0; i < LEN(forceddomains); i++)
+	for (i = 0; i < LEN(forceddomains); i++)
 	{
 		strncpy(buff, forceddomains[i][0], BUFF_SIZE-1);
 		if (strcmp(buff, buff2) == 0)
@@ -219,9 +225,13 @@ exitdomaincheck:
 int
 forkexecute(char *url)
 {
+	int z;
+	char *buff;
+	char *t;
+	char *args[ARG_LIMIT];
 	int ext = 0;
 	ext = getext(url);
-	// check if the domain should be forced to a program
+	/* check if the domain should be forced to a program */
 	ext = checkforceddomains(url, ext);
 	if (NOFORK)
 		printf("program to run is: \"%s %s\"\n", programs[ext][1], url);
@@ -230,7 +240,7 @@ forkexecute(char *url)
 		pid_t pid = fork();
 		if (pid == 0)
 		{
-			// child process, we don't want to ignore signals
+			/* child process, we don't want to ignore signals */
 			signal(SIGCHLD, SIG_DFL);
 			/*
 			 * we don't want std{out,err} to be associated with the terminal,
@@ -239,8 +249,7 @@ forkexecute(char *url)
 			 */
 			freopen("/dev/null", "w", stdout);
 			freopen("/dev/null", "w", stderr);
-			char *args[ARG_LIMIT];
-			char *buff = malloc(BUFF_SIZE);
+			buff = malloc(BUFF_SIZE);
 			if (buff == NULL)
 			{
 				perror("malloc");
@@ -252,9 +261,9 @@ forkexecute(char *url)
 			 * that we will use in execvp
 			 */
 			strncpy(buff, programs[ext][1], BUFF_SIZE-1);
-			char *t = strtok(buff, " ");
-			int z = 0;
-			while (t != NULL && z < ARG_LIMIT-2) // save a position for the url and NULL
+			t = strtok(buff, " ");
+			z = 0;
+			while (t != NULL && z < ARG_LIMIT-2) /*save a position for the url and NULL */
 			{
 				args[z] = t;
 				t = strtok(NULL, " ");
@@ -277,11 +286,12 @@ forkexecute(char *url)
 int
 main(int argc, char *argv[])
 {
+	int i;
 	int link = 0;
 	int ret = 1;
-	// we don't care about children
+	/* we don't care about children */
 	signal(SIGCHLD, SIG_IGN);
-	for (int i = 1; i < argc; i++)
+	for (i = 1; i < argc; i++)
 	{
 		/*
 		 * loop through every argument, check if it is a link
