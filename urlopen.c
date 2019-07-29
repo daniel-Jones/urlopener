@@ -48,7 +48,6 @@ char *programs[][2] =
 	{"jpg,jpeg,png,jpg:large,pnj",			"/usr/bin/feh"},
 	{"gif,gifv,webm,mp4,mp3,wav,flac", 		"/usr/bin/mpv --loop --force-window=yes"},
 	{"pdf",						"/usr/bin/mupdf"},
-	{"slackspecial",				"/home/daniel_j/compiled/waterfox/waterfox"}
 };
 
 char *forceddomains[][2] =
@@ -67,16 +66,12 @@ char *forceddomains[][2] =
 	{"vimeo.com",			"2"},
 	{"www.liveleak.com",		"2"},
 	{"liveleak.com",		"2"},
-	{"files.slack.com",		"4"},
 	{"reddit.com",			"4"},
 	{"www.reddit.com",		"4"},
 	{"new.reddit.com",		"4"},
 	{"old.reddit.com",		"4"},
-	{"mod.reddit.com",		"4"},
 	{"redd.it",			"4"},
 	{"twitter.com",			"4"},
-	{"globaloffensivebot.com",	"4"}
-
 };
 
 int
