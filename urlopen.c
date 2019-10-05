@@ -66,6 +66,7 @@ char *forceddomains[][2] =
 	{"vimeo.com",			"2"},
 	{"www.liveleak.com",		"2"},
 	{"liveleak.com",		"2"},
+	{"invidio.us",			"2"},
 	{"reddit.com",			"4"},
 	{"www.reddit.com",		"4"},
 	{"new.reddit.com",		"4"},
