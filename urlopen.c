@@ -45,7 +45,7 @@ char *programs[][2] =
 	 * separate extensions using ','
 	 */
 	{"default", /* this is the default program */	"/usr/bin/qutebrowser"},
-	{"jpg,jpeg,png,jpg:large,png:large,pnj",	"/usr/bin/feh"},
+	{"jpg,jpeg,png,jpg:large,png:large,pnj",	"/usr/bin/feh --image-bg black -Z -."},
 	{"gif,gifv,webm,mp4,mp3,wav,flac", 		"/usr/bin/mpv --loop --force-window=yes"},
 	{"pdf",						"/usr/bin/mupdf"},
 };
