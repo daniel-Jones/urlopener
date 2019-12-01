@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -238,6 +240,7 @@ forkexecute(char *url)
 		pid_t pid = fork();
 		if (pid == 0)
 		{
+			extern char** environ;
 			/* child process, we don't want to ignore signals */
 			signal(SIGCHLD, SIG_DFL);
 			/*
@@ -269,7 +272,8 @@ forkexecute(char *url)
 			}
 			args[z] = url;
 			args[z+1] = (char *)0;
-			execvp(args[0], args);
+			setenv("PULSE_PROP", "media.role=browser", 1);
+			execve(args[0], args, environ);
 			_exit(1);
 		}
 		else if (pid == -1)
